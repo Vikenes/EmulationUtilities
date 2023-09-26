@@ -25,6 +25,7 @@ class ModelConfig(BaseModel):
     learning_rate: float
     weight_decay: Optional[float]
     batch_norm: Optional[bool]
+    zero_bias: Optional[bool] = False
     positive_output: bool = False
     kernel_size: Optional[Union[int, Tuple]] = None
     kernel_size_left: Optional[int] = None
