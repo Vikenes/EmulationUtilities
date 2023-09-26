@@ -41,6 +41,8 @@ class ModelConfig(BaseModel):
 class TrainingConfig(BaseModel):
     gpus: Optional[List[int]]
     max_epochs: int
+    patience: Optional[int] = 20
     stochastic_weight_avg: bool
     swa_start: Optional[int] = 110
+    gradient_clip_val: Optional[float] = None
     default_root_dir: str
