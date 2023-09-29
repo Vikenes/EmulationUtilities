@@ -27,6 +27,7 @@ class FullyConnected(pl.LightningModule):
         weight_decay: Optional[float] = 0.0,
         batch_norm: bool = False,
         positive_output: bool = False,
+        gamma: float = 0.97,
         **kwargs,
     ):
 
@@ -41,6 +42,7 @@ class FullyConnected(pl.LightningModule):
             "weight_decay",
             "loss",
             "positive_output",
+            "gamma",
         )
         self.learning_rate = learning_rate
         self.weight_decay = weight_decay
@@ -80,6 +82,7 @@ class FullyConnected(pl.LightningModule):
         else:
             self.loss_fct = getattr(torch.nn, loss)()
         self.positive_output = positive_output
+        self.gamma = gamma
 
     @staticmethod
     def add_model_specific_args(parent_parser):
@@ -138,11 +141,11 @@ class FullyConnected(pl.LightningModule):
             self.parameters(), lr=self.learning_rate, weight_decay=self.weight_decay
         )
         # TODO: move this to config file
-        # scheduler = ExponentialLR(optimizer, gamma=0.97)
+        scheduler = ExponentialLR(optimizer, gamma=self.gamma, verbose=False)
         # patience = 30
-        scheduler = ReduceLROnPlateau(
-            optimizer, mode="min", patience=20, factor=0.1, min_lr=1.0e-6, verbose=True,
-        )
+        # scheduler = ReduceLROnPlateau(
+        #     optimizer, mode="min", patience=30, factor=0.1, min_lr=1.0e-6, verbose=True,
+        # )
 
         return {
             "optimizer": optimizer,
@@ -150,6 +153,6 @@ class FullyConnected(pl.LightningModule):
                 "scheduler": scheduler,
                 "monitor": "loss/val",
                 "interval": "epoch",
-                "frequency": 1,
+                "frequency": 10,
             },
         }
