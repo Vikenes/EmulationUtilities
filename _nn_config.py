@@ -6,7 +6,7 @@ class DataConfig(BaseModel):
     feature_columns: List[str]
     label_columns: List[str]
     batch_size: Optional[int]
-    num_workers: Optional[int]
+    num_workers: Optional[int] = None
     shuffle: Optional[bool]
     train_data_path: "str"
     val_data_path: "str"
@@ -43,7 +43,7 @@ class TrainingConfig(BaseModel):
     gpus: Optional[List[int]]
     max_epochs: int
     patience: Optional[int] = 20
-    stochastic_weight_avg: bool
+    use_swa: bool
     swa_start: Optional[int] = 110
     gamma: Optional[float] = 0.97
     gradient_clip_val: Optional[float] = None
