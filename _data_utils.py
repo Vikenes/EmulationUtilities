@@ -57,9 +57,9 @@ def read_data(
 class Dataset(torch.utils.data.Dataset):
     def __init__(
         self,
-        features:       Union[np.array, torch.tensor],
-        labels:         Union[np.array, torch.tensor],
-        sample_index:   Union[np.array, torch.tensor] = None,
+        features:       Union[np.array, torch.Tensor],
+        labels:         Union[np.array, torch.Tensor],
+        sample_index:   Union[np.array, torch.Tensor] = None,
     ):
         """ Create a pytorch dataset for a set of features and labels,
         making sure these are pytorch tensors
@@ -86,7 +86,7 @@ class Dataset(torch.utils.data.Dataset):
         """
         return len(self.x)
 
-    def __getitem__(self, index: int) -> Tuple[torch.tensor, torch.tensor]:
+    def __getitem__(self, index: int) -> Tuple[torch.Tensor, torch.Tensor]:
         """ Get tuple of features, labels by index
 
         Args:
