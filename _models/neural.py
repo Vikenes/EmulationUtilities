@@ -141,11 +141,11 @@ class FullyConnected(pl.LightningModule):
             self.parameters(), lr=self.learning_rate, weight_decay=self.weight_decay
         )
         # TODO: move this to config file
-        scheduler = ExponentialLR(optimizer, gamma=self.gamma, verbose=False)
+        # scheduler = ExponentialLR(optimizer, gamma=self.gamma, verbose=False)
         # patience = 30
-        # scheduler = ReduceLROnPlateau(
-        #     optimizer, mode="min", patience=30, factor=0.1, min_lr=1.0e-6, verbose=True,
-        # )
+        scheduler = ReduceLROnPlateau(
+            optimizer, mode="min", patience=20, factor=0.1, min_lr=1.0e-6, verbose=True,
+        )
 
         return {
             "optimizer": optimizer,
@@ -153,6 +153,6 @@ class FullyConnected(pl.LightningModule):
                 "scheduler": scheduler,
                 "monitor": "loss/val",
                 "interval": "epoch",
-                "frequency": 10,
+                "frequency": 1,
             },
         }

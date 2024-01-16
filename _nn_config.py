@@ -48,3 +48,4 @@ class TrainingConfig(BaseModel):
     gamma: Optional[float] = 0.97
     gradient_clip_val: Optional[float] = None
     default_root_dir: str
+    log_save_dir: Optional[str] = None 

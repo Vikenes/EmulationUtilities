@@ -129,7 +129,7 @@ class Predictor:
         return feature_scaler, label_scaler
 
     def __call__(self, 
-                 inputs: Union[np.array, torch.tensor], 
+                 inputs: Union[np.array, torch.Tensor], 
                  return_tensors=False,
                  transform=False,):
         if not torch.is_tensor(inputs) and not self.flax:
