@@ -37,12 +37,14 @@ class ModelConfig(BaseModel):
     autoencoder: Optional[bool] = None
     input_height: Optional[int] = None
     latent_dim: Optional[int] = None
+    scheduler_patience: Optional[int] = 20
+
 
 
 class TrainingConfig(BaseModel):
     gpus: Optional[List[int]]
     max_epochs: int
-    patience: Optional[int] = 20
+    stopping_patience: Optional[int] = 100
     use_swa: bool
     swa_start: Optional[int] = 110
     gamma: Optional[float] = 0.97

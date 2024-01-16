@@ -28,6 +28,7 @@ class FullyConnected(pl.LightningModule):
         batch_norm: bool = False,
         positive_output: bool = False,
         gamma: float = 0.97,
+        scheduler_patience: int = 20,
         **kwargs,
     ):
 
@@ -83,6 +84,7 @@ class FullyConnected(pl.LightningModule):
             self.loss_fct = getattr(torch.nn, loss)()
         self.positive_output = positive_output
         self.gamma = gamma
+        self.scheduler_patience = scheduler_patience
 
     @staticmethod
     def add_model_specific_args(parent_parser):
@@ -144,7 +146,7 @@ class FullyConnected(pl.LightningModule):
         # scheduler = ExponentialLR(optimizer, gamma=self.gamma, verbose=False)
         # patience = 30
         scheduler = ReduceLROnPlateau(
-            optimizer, mode="min", patience=20, factor=0.1, min_lr=1.0e-6, verbose=True,
+            optimizer, mode="min", patience=self.scheduler_patience, factor=0.1, min_lr=1.0e-6, verbose=True,
         )
 
         return {
