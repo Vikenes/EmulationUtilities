@@ -57,7 +57,7 @@ class StandardScaler:
     def fit(self, X):
         self._reset()
         self.mean_ = X.mean(0, keepdim=True)
-        self.scale_ = X.std(0, unbiased=False, keepdim=True)
+        self.scale_ = X.std(0, correction=0, keepdim=True)
         self.scale_[self.scale_ == 0.0] = 1.0
 
     def transform(self, X):

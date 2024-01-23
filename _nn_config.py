@@ -13,6 +13,7 @@ class DataConfig(BaseModel):
     test_data_path: "str"
     feature_scaler: "str"
     label_scaler: Optional["str"]
+    apply_scaling: Optional[bool] = True
 
 
 
