@@ -119,7 +119,6 @@ class Predictor:
             scaler_dict["labels"]["attrs"] = {
                 k: v for k, v in scaler_dict["labels"]["attrs"].items() if k != "flax"
             }
-        
         feature_scaler = getattr(scalers, scaler_dict["features"]["type"])(
             flax=flax, **scaler_dict["features"]["attrs"]
         )
@@ -130,26 +129,42 @@ class Predictor:
 
     def __call__(self, 
                  inputs: Union[np.array, torch.Tensor], 
-                 return_tensors=False,
-                 transform=False,):
+                 return_tensors=False):
         if not torch.is_tensor(inputs) and not self.flax:
             inputs = torch.from_numpy(inputs.astype(np.float32))
 
+
+        if not hasattr(self.feature_scaler, "mean_") and type(self.feature_scaler).__name__ != "IdentityScaler":
+            """
+            Previous emulators had unscaled data, despite using a scalar in the config.
+            Now, scaling is done in the emulator, 
+            and no scaling corresponds to IdentityScaler.
+
+            Thus, for older emulators, we don't invert scaling if the scaler has no mean_ attribute.  
+            Will be removed in the future, when all emulators have been retrained properly.
+            """
+            transform = False 
+        else:
+            transform = True
+        
         if transform:
             inputs = self.feature_scaler.transform(inputs)
-
+        
         if not self.flax:
             with torch.no_grad():
-                predictions = self.model(inputs)
+                """
+                Not sure whether detach is needed. 
+                """
+                predictions = self.model.forward(inputs).detach()
                 
         else:
             predictions = self.model.apply(freeze({"params": self.params}), inputs)
         if transform:
             predictions = self.label_scaler.inverse_transform(predictions)
-
         if not return_tensors:
             if not self.flax:
-                return predictions.detach().numpy()
+                return predictions.numpy()
+
             else:
                 return jnp.asarray(predictions)
         return predictions
