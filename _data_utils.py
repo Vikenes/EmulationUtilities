@@ -22,7 +22,6 @@ def read_data(
     label_columns:      List[str],
     sample_idx_column:  str     = None,
     as_tensors:         bool    = True,
-    replace_nan:        bool    = True,
 ):
     """
     Read a pandas data frame with given feature and label columns
@@ -40,19 +39,13 @@ def read_data(
         label_columns = [
             col for col in df.columns if col.startswith(label_columns[0][:-1])
         ]
-    if replace_nan:
-        y = df[label_columns].bfill().to_numpy() #fillna(method="bfill").to_numpy()
-    else:
-        y = df[label_columns].to_numpy()
+   
+    y = df[label_columns].to_numpy()
     if sample_idx_column is not None:
         sample_index = df[sample_idx_column]
     else:
         sample_index = None
-    # if sample_size is not None:
-        # Reshape y=(N,1) to (N/N_samples, N_samples)
-        # x = x.reshape(-1, sample_size, x.shape[1])
-        # y = y.reshape(-1, sample_size)
-
+   
     if as_tensors:
         return (
             torch.from_numpy(x.astype(np.float32)),
@@ -156,7 +149,6 @@ class DataModule(pl.LightningDataModule):
             feature_columns     = self.feature_columns,
             label_columns       = self.label_columns,
             sample_idx_column   = self.sample_idx_column,
-            replace_nan         = True,
         )
         return Dataset(features=x, labels=y, sample_index=sample_index,)
 
@@ -220,8 +212,7 @@ class DataModule(pl.LightningDataModule):
             self.test_data = self.load_dataset(df=pd.read_csv(test_data_path,))
 
         # Apply scaling. 
-        # To not apply actual transformations, 
-        # set feature_scaler and label_scaler to "IdentityScaler" in config file
+        # If you don't want scaled data, use "IdentityScaler" in config file
         self.transform_datasets()
 
     def setup_folds(self, num_folds: int) -> None:
