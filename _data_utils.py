@@ -178,7 +178,7 @@ class DataModule(pl.LightningDataModule):
         test_data_path:     Optional[Path] = None,
         val_data_path:      Optional[Path] = None,
         stage:              str = None,
-        autoencoder:        bool = False
+        autoencoder:        bool = False,
     ):
         """ Setup the training/validation/test datasets
 
@@ -219,6 +219,11 @@ class DataModule(pl.LightningDataModule):
                 self.val_data = self.load_dataset(df=pd.read_csv(val_data_path,))
             self.test_data = self.load_dataset(df=pd.read_csv(test_data_path,))
 
+        # Apply scaling. 
+        # To not apply actual transformations, 
+        # set feature_scaler and label_scaler to "IdentityScaler" in config file
+        self.transform_datasets()
+
     def setup_folds(self, num_folds: int) -> None:
         self.num_folds = num_folds
         self.splits = [
@@ -243,8 +248,8 @@ class DataModule(pl.LightningDataModule):
 
     def transform_datasets(self,):
         self.train_data.x   = self.feature_scaler.fit_transform(self.train_data.x)
-        self.test_data.x    = self.feature_scaler.transform(self.test_data.x)
         self.train_data.y   = self.label_scaler.fit_transform(self.train_data.y)
+        self.test_data.x    = self.feature_scaler.transform(self.test_data.x)
         self.test_data.y    = self.label_scaler.transform(self.test_data.y)
         if hasattr(self, "val_data"):
             self.val_data.x = self.feature_scaler.transform(self.val_data.x)
