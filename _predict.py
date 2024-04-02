@@ -1,6 +1,6 @@
 from pathlib import Path
 import pickle
-from typing import Union, List, Optional, Tuple, Dict
+from typing import Union, List, Optional, Tuple, Dict, TypeVar
 from abc import ABC, abstractmethod
 import numpy as np
 import jax.numpy as jnp
@@ -13,6 +13,8 @@ from flax.traverse_util import flatten_dict, unflatten_dict
 import _scalers as scalers
 import _models as models
 
+Scaler = TypeVar("Scaler")
+import torch.nn as nn
 
 def convert_state_dict_from_pt(
     model_class: ABC, state: Dict,
@@ -29,8 +31,8 @@ def convert_state_dict_from_pt(
 class Predictor:
     def __init__(
         self,
-        feature_scaler: "Scaler",
-        label_scaler:   "Scaler",
+        feature_scaler: Scaler,
+        label_scaler:   Scaler,
         model:          "nn.Module",
         device:         int     = -1,
         flax:           bool    = False,
@@ -110,7 +112,7 @@ class Predictor:
     @classmethod
     def load_scalers_from_path(
         cls, path: Path, flax: bool = False
-    ) -> Tuple["Scaler", "Scaler"]:
+    ) -> Tuple[Scaler, Scaler]:
         with open(path / "scalers.pkl", "rb") as fp:
             scaler_dict = pickle.load(fp)
             scaler_dict["features"]["attrs"] = {
