@@ -186,6 +186,8 @@ class StandardLogScaler(StandardScaler):
         if self.flax:
             X = jnp.log10(X)
         else:
+            # Check that X is strictly positive
+            assert (X > 0).all(), "X must be strictly positive"
             X = torch.log10(X)
         return super().transform(X)
 
